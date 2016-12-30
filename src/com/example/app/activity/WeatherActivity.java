@@ -4,6 +4,7 @@ package com.example.app.activity;
 import java.security.PublicKey;
 
 import com.example.app.R;
+import com.example.app.service.AutoUpdateService;
 import com.example.app.util.HttpCallBackListener;
 import com.example.app.util.HttpUtil;
 import com.example.app.util.Utility;
@@ -61,6 +62,10 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		}else {
 			showWeather();
 		}
+		switchCity.setOnClickListener(this);
+		refreshWeather.setOnClickListener(this);
+		switchCity = (Button) findViewById(R.id.switch_city);
+		refreshWeather = (Button) findViewById(R.id.refresh_weather);
 		switchCity.setOnClickListener(this);
 		refreshWeather.setOnClickListener(this);
 	}
@@ -145,6 +150,8 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		currentDateText.setText(prefs.getString("current_date", ""));
 		weatherInfoLayout.setVisibility(View.VISIBLE);
 		cityNameText.setVisibility(View.VISIBLE);
+		Intent intent = new Intent(this,AutoUpdateService.class);
+		startService(intent);
 		
 		
 	}
