@@ -3,6 +3,8 @@ package com.example.app.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import com.example.app.model.City;
 import com.example.app.model.County;
 import com.example.app.model.Province;
@@ -110,5 +112,13 @@ public class CoolWeatherDB {
 			} while (cursor.moveToNext());
 		}
 		return list;
+	}
+	
+	public static void handleWeatherResponse(Context context,String response){
+		try {
+			JSONObject jsonObject = new JSONObject(response);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 }

@@ -21,7 +21,10 @@ import android.R.integer;
 import android.app.Activity;
 import android.app.PendingIntent.OnFinished;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.CollapsibleActionView;
 import android.view.View;
@@ -54,9 +57,14 @@ public class ChooseAreaActivity extends Activity {
 	
 	private int currentLevel;
 	
+	private boolean isFromWeatherActivity;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		listView = (ListView) findViewById(R.id.list_view);
@@ -64,6 +72,16 @@ public class ChooseAreaActivity extends Activity {
 		adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
 		listView.setAdapter(adapter);
 		coolWeatherDB = CoolWeatherDB.getInstance(this);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		
+		if (prefs.getBoolean("city_selected", false && !isFromWeatherActivity)) {
+			Intent intent = new Intent(this,WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+			
+		}
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -75,6 +93,13 @@ public class ChooseAreaActivity extends Activity {
 				}else if (currentLevel == LEVEL_CITY){
 					selectedCity = cityList.get(index);		
 					queryCounties();
+				}else if (currentLevel == LEVEL_COUNTY) {
+					String countyCode = countyList.get(index).getCountyCode();
+					Intent intent = new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+					intent.putExtra("county_code", countyCode);
+					startActivity(intent);
+					finish();
+					
 				}
 			}
 		});
@@ -113,7 +138,7 @@ public class ChooseAreaActivity extends Activity {
 	}
 	private void queryCities() {
 		cityList = coolWeatherDB.loadCities(selectedProvince.getId());
-		if (cityList.size() >0) {
+		if (cityList.size() > 0) {
 			dataList.clear();
 			for (City city:cityList) {
 				dataList.add(city.getCityName());
